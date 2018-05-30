@@ -226,7 +226,6 @@ DataPer=pd.DataFrame(Per_s)
 ###  Per['per63(12.125/278.75)'][fechaRun1:fechaRun2+1]  >>>> para llamar un punto específico
 12.125/278.75
 
-
 #ciclo anual punto 1 SAI
 altura1= alt1[np.isfinite(alt1)]
 
@@ -269,7 +268,7 @@ WMM=np.mean(WM,axis=0)
 WMS=np.std(WM, axis=0)
 
 plt.plot(WMM)
-
+plt.show()
 
 ####ARCHIVOS TPAR######
 ###rango de fechas###
@@ -282,7 +281,7 @@ fechaRun2=np.where(fecha==[datetime.datetime(2004, 1, 31, 18, 0)])[0][0]
 fechas= np.array([fecha[i].strftime('%Y%m%d.%H%M') for i in range(len(fecha))])
 timeRun=fechas[fechaRun1:fechaRun2+1]
 
-TPAR=np.c_[timeRun,alt1[fechaRun1:fechaRun2+1],per1[fechaRun1:fechaRun2+1],dir1[fechaRun1:fechaRun2+1]] 
+#TPAR=np.c_[timeRun,alt1[fechaRun1:fechaRun2+1],per1[fechaRun1:fechaRun2+1],dir1[fechaRun1:fechaRun2+1]] 
 
 
 
@@ -317,18 +316,49 @@ for i,k in enumerate (timeRun):
 	print Swh[str(k)]
 
 
+###Archivos TPAR Para el mes de Mayo media mensual multianual########
+
+DataSwh[1][i]
 
 
+fechasrange=pd.date_range(start='1979/1/1', end='2017/12/31/18',freq='6H')
+
+Mayos=np.where(fechasrange.month==5)[0]
 
 
+DatosMayo=DataSwh[1][7][Mayos]
+mediaM=np.reshape(DatosMayo,(39,124))
+MediaMM=np.mean(mediaM,axis=0)
+plt.plot(MediaMM)
+plt.show()
 
 
+direc_spread=[30.0]*len(MediaMM)
 
-
-
-
-
-
+#CoordenadasSAI = open("CoordenadasSAI.txt", "w")
+for i,k in enumerate(sorted(Dir)):
+	#print >>CoordenadasSAI,i+1, k[6:-1]
+	DatosMayo=DataSwh[1][i][Mayos]
+	DatosMayoDir=DataDir[1][i][Mayos]
+	DatosMayoPer=DataPer[1][i][Mayos]
+	mediaM=np.reshape(DatosMayo,(39,124))
+	MediaMM=np.mean(mediaM,axis=0)
+	mediaMD=np.reshape(DatosMayoDir,(39,124))
+	MediaMMD=np.mean(mediaMD,axis=0)
+	mediaMP=np.reshape(DatosMayoPer,(39,124))
+	MediaMMP=np.mean(mediaMP,axis=0)
+	TPAR = np.c_[timeRun,MediaMM,MediaMMP,MediaMMD,direc_spread]  #"np.c_ >>column stack" 
+	for j in (range(len(timeRun))):
+    		with open('TPARdir2_'+str(i+1)+'.txt','a') as archivo:
+			if j==0:
+       				archivo.write('TPAR'+"\n")
+				line = "%s" % ("    ".join(map(str,(TPAR[j]))))
+        			archivo.write(line+"\n")	
+			else:
+				line = "%s" % ("    ".join(map(str,(TPAR[j]))))
+        			archivo.write(line+"\n")
+        	    
+CoordenadasSAI.close()
 
 
 
